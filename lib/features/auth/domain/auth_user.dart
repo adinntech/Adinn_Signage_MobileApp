@@ -18,6 +18,13 @@ enum UserRole {
         orElse: () => UserRole.unknown,
       );
 
+  /// Where this role lands after login; null for roles that use the web CRM.
+  String? get homeRoute => switch (this) {
+        UserRole.recceExecutive => '/recce',
+        UserRole.vendor => '/vendor',
+        _ => null,
+      };
+
   /// Roles this mobile app is built for.
   bool get isFieldStaff =>
       this == UserRole.recceExecutive || this == UserRole.vendor;

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_theme.dart';
 import '../auth/domain/auth_user.dart';
 import '../auth/presentation/auth_controller.dart';
+import '../field/presentation/field_dashboard.dart';
 
 /// Bottom-nav shell with Home, Assignments, Map, Sync, Profile.
 class HomeShell extends ConsumerStatefulWidget {
@@ -18,25 +19,31 @@ class _HomeShellState extends ConsumerState<HomeShell> {
 
   static const _titles = ['Home', 'Assignments', 'Map', 'Sync', 'Profile'];
 
+  /// Recce executives are teal, vendors purple (shared design system).
+  static Color _accent(UserRole role) =>
+      role == UserRole.vendor ? AppColors.vendor : AppColors.teal;
+
   @override
   Widget build(BuildContext context) {
     final auth = ref.watch(authControllerProvider);
     if (auth is! Authenticated) return const SizedBox.shrink();
 
     final pages = <Widget>[
-      _HomePage(user: auth.user),
+      FieldDashboard(user: auth.user),
+      AssignmentsPage(user: auth.user),
       const _Placeholder(
-          icon: Icons.assignment_outlined, text: 'Your assignments will appear here.'),
-      const _Placeholder(
-          icon: Icons.map_outlined, text: 'Site map arrives in a later phase.'),
-      const _Placeholder(
-          icon: Icons.sync, text: 'Offline sync arrives in a later phase.'),
+          icon: Icons.map_outlined, text: 'Route map arrives in a later phase.'),
+      const SyncPage(),
       _ProfilePage(user: auth.user),
     ];
 
     return Scaffold(
       appBar: AppBar(
         title: Text(_titles[_index]),
+        flexibleSpace: Align(
+          alignment: Alignment.bottomCenter,
+          child: Container(height: 3, color: _accent(auth.user.role)),
+        ),
         actions: [
           if (auth.offline)
             const Padding(
@@ -71,80 +78,6 @@ class _HomeShellState extends ConsumerState<HomeShell> {
               selectedIcon: Icon(Icons.person),
               label: 'Profile'),
         ],
-      ),
-    );
-  }
-}
-
-class _HomePage extends StatelessWidget {
-  const _HomePage({required this.user});
-  final AuthUser user;
-
-  @override
-  Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
-    final first = user.name.trim().split(' ').first;
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        Text('Hello, ${first.isEmpty ? 'there' : first}',
-            style: text.headlineSmall?.copyWith(
-                color: AppColors.navy, fontWeight: FontWeight.w700)),
-        const SizedBox(height: 8),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Chip(
-            label: Text(user.role.label),
-            backgroundColor: AppColors.softBlueBg,
-            side: BorderSide.none,
-          ),
-        ),
-        const SizedBox(height: 16),
-        GridView.count(
-          crossAxisCount: 2,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: 12,
-          crossAxisSpacing: 12,
-          childAspectRatio: 1.3,
-          children: const [
-            _StatCard(label: 'Assigned', value: 0, color: AppColors.softBlue),
-            _StatCard(label: 'In Progress', value: 0, color: AppColors.orange),
-            _StatCard(label: 'Completed', value: 0, color: AppColors.teal),
-            _StatCard(label: 'Pending Sync', value: 0, color: AppColors.navy),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Text('Assignments arrive in a later phase.',
-            style: text.bodyMedium?.copyWith(color: Colors.black54)),
-      ],
-    );
-  }
-}
-
-class _StatCard extends StatelessWidget {
-  const _StatCard(
-      {required this.label, required this.value, required this.color});
-  final String label;
-  final int value;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('$value',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: color, fontWeight: FontWeight.w700)),
-            const SizedBox(height: 4),
-            Text(label),
-          ],
-        ),
       ),
     );
   }

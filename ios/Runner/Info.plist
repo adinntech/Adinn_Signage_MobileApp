@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Take shop, board and odometer photos for the recce.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Record where each shop visit and trip starts.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -28,13 +32,25 @@
 	<true/>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Take shop, board and odometer photos for the recce.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Record where each shop visit and trip starts.</string>
 		<key>UIApplicationSupportsMultipleScenes</key>
 		<false/>
 		<key>UISceneConfigurations</key>
 		<dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Take shop, board and odometer photos for the recce.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Record where each shop visit and trip starts.</string>
 			<key>UIWindowSceneSessionRoleApplication</key>
 			<array>
 				<dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Take shop, board and odometer photos for the recce.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Record where each shop visit and trip starts.</string>
 					<key>UISceneClassName</key>
 					<string>UIWindowScene</string>
 					<key>UISceneConfigurationName</key>

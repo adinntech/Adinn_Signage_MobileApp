@@ -8,6 +8,7 @@ class AppColors {
   static const softBlueBg = Color(0xFFE6EEFC);
   static const teal = Color(0xFF0F9D8A);
   static const orange = Color(0xFFF08C00);
+  static const vendor = Color(0xFF9333EA);
   static const error = Color(0xFFC62828);
   static const background = Color(0xFFF7F8FB);
 }
