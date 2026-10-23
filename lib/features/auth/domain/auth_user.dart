@@ -1,6 +1,7 @@
 enum UserRole {
   superAdmin('SUPER_ADMIN', 'Super Admin'),
   bd('BD', 'Business Development'),
+  clientServicing('CLIENT_SERVICING', 'Client Servicing'),
   recceCoordinator('RECCE_COORDINATOR', 'Recce Coordinator'),
   recceExecutive('RECCE_EXECUTIVE', 'Recce Executive'),
   vendor('VENDOR', 'Vendor'),
