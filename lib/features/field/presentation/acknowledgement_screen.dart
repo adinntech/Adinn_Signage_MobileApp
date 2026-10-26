@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../../core/services/photo_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_widgets.dart';
+import '../../../core/widgets/input_formats.dart';
 import '../../../core/widgets/signature_pad.dart';
 import '../data/field_controller.dart';
 import '../domain/field_models.dart';
@@ -104,9 +105,9 @@ class _State extends ConsumerState<AcknowledgementScreen> {
               _Row('Shop', s.name),
               _Row('Location', '${s.address}, ${s.area}'),
               const SizedBox(height: 8),
-              TextField(controller: _contact, keyboardType: TextInputType.phone, decoration: const InputDecoration(labelText: 'Contact number')),
+              TextField(controller: _contact, keyboardType: TextInputType.phone, inputFormatters: phoneFormat, decoration: const InputDecoration(labelText: 'Contact number')),
               const SizedBox(height: 12),
-              TextField(controller: _gstin, textCapitalization: TextCapitalization.characters, decoration: const InputDecoration(labelText: 'GSTIN')),
+              TextField(controller: _gstin, textCapitalization: TextCapitalization.characters, inputFormatters: gstFormat, decoration: const InputDecoration(labelText: 'GSTIN')),
             ]),
           ),
         ),

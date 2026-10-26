@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_widgets.dart';
@@ -40,10 +41,39 @@ class ProjectScreen extends ConsumerWidget {
                       Text('Started ${DateFormat('d MMM, h:mm a').format(trip.startedAt)}${trip.lat == null ? ' · GPS unavailable' : ''}', style: const TextStyle(color: Colors.black54, fontSize: 13)),
                     ]),
             ),
+            if (p.isAso)
+              AppSection(
+                title: 'Where to go',
+                icon: Icons.place_outlined,
+                child: p.areas.isEmpty
+                    ? Text('Go to ${p.district.isEmpty ? 'the given area' : p.district} and add the shops you find.${p.instructions.isEmpty ? '' : '\n\n${p.instructions}'}')
+                    : Column(children: [
+                        for (final a in p.areas)
+                          ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: const CircleAvatar(backgroundColor: AppColors.softBlueBg, child: Icon(Icons.place, color: AppColors.navy)),
+                            title: Text(a.name, style: const TextStyle(fontWeight: FontWeight.w600)),
+                            subtitle: Text([if (a.address.isNotEmpty) a.address, if (a.approxShops != null) 'about ${a.approxShops} shops'].join(' · ')),
+                            trailing: IconButton(
+                              tooltip: 'Open in Google Maps',
+                              icon: const Icon(Icons.map_outlined, color: AppColors.royal),
+                              onPressed: () => launchUrl(
+                                Uri.parse('https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(a.address.isNotEmpty ? a.address : '${a.name}, ${p.district}')}'),
+                                mode: LaunchMode.externalApplication,
+                              ),
+                            ),
+                          ),
+                      ]),
+              ),
             AppSection(
               title: 'Shops (${p.doneCount}/${p.shops.length})',
               icon: Icons.storefront_outlined,
               child: Column(children: [
+                if (p.shops.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Text(p.isAso ? 'No shops yet. Add each shop when you reach it.' : 'No shops to visit yet.', style: const TextStyle(color: Colors.black54)),
+                  ),
                 for (final s in p.shops)
                   ListTile(
                     contentPadding: EdgeInsets.zero,
@@ -52,6 +82,11 @@ class ProjectScreen extends ConsumerWidget {
                     subtitle: Text(s.address, maxLines: 1, overflow: TextOverflow.ellipsis),
                     trailing: AppStatusChip(s.statusLabel, color: shopColor(s)),
                     onTap: () => context.push('/project/$pid/shop/${s.id}'),
+                  ),
+                if (p.isAso && !p.submitted)
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: FilledButton.tonalIcon(onPressed: () => context.push('/project/$pid/add-shop'), icon: const Icon(Icons.add_business), label: const Text('Add shop')),
                   ),
               ]),
             ),

@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../core/services/photo_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_widgets.dart';
+import '../../../core/widgets/input_formats.dart';
 import '../data/field_controller.dart';
 import '../domain/field_models.dart';
 
@@ -99,7 +100,7 @@ class _SheetState extends ConsumerState<_ExpenseSheet> {
             const SizedBox(height: 14),
             Wrap(spacing: 8, runSpacing: 8, children: [for (final c in expenseCategories) ChoiceChip(label: Text(c), selected: _category == c, onSelected: (_) => setState(() => _category = c))]),
             const SizedBox(height: 14),
-            TextFormField(controller: _amount, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'Amount (₹) *', prefixIcon: Icon(Icons.currency_rupee)), validator: (v) => (double.tryParse((v ?? '').trim()) ?? 0) > 0 ? null : 'Enter an amount greater than 0'),
+            TextFormField(controller: _amount, keyboardType: const TextInputType.numberWithOptions(decimal: true), inputFormatters: decimalFormat(), decoration: const InputDecoration(labelText: 'Amount (₹) *', prefixIcon: Icon(Icons.currency_rupee)), validator: (v) => (double.tryParse((v ?? '').trim()) ?? 0) > 0 ? null : 'Enter an amount greater than 0'),
             const SizedBox(height: 12),
             TextFormField(controller: _note, decoration: const InputDecoration(labelText: 'Note (optional)')),
             const SizedBox(height: 12),

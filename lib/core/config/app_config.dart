@@ -19,4 +19,7 @@ class AppConfig {
   }
 
   static const String appName = 'Adinn Recce';
+
+  /// `--dart-define=DEMO_DATA=true` loads sample jobs instead of the real ones (for trying the app without a backend).
+  static const bool demo = bool.fromEnvironment('DEMO_DATA');
 }

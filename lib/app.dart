@@ -8,6 +8,7 @@ import 'features/auth/presentation/auth_controller.dart';
 import 'features/auth/presentation/login_screen.dart';
 import 'features/auth/presentation/register_screen.dart';
 import 'features/field/presentation/acknowledgement_screen.dart';
+import 'features/field/presentation/add_shop_screen.dart';
 import 'features/field/presentation/dealer_verification_screen.dart';
 import 'features/field/presentation/expenses_screen.dart';
 import 'features/field/presentation/photo_editor_screen.dart';
@@ -18,6 +19,7 @@ import 'features/field/presentation/submit_screen.dart';
 import 'features/field/presentation/survey_screen.dart';
 import 'features/field/presentation/trip_screen.dart';
 import 'features/home/home_shell.dart';
+import 'features/notifications/presentation/notifications_screen.dart';
 import 'features/home/unsupported_role_screen.dart';
 
 class _RouterRefresh extends ChangeNotifier {
@@ -56,7 +58,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/register', builder: (_, _) => const RegisterScreen()),
       GoRoute(path: '/recce', builder: (_, _) => const HomeShell()),
       GoRoute(path: '/vendor', builder: (_, _) => const HomeShell()),
+      GoRoute(path: '/notifications', builder: (_, _) => const NotificationsScreen()),
       GoRoute(path: '/project/:pid', builder: (_, s) => ProjectScreen(pid: s.pathParameters['pid']!)),
+      GoRoute(path: '/project/:pid/add-shop', builder: (_, s) => AddShopScreen(pid: s.pathParameters['pid']!)),
       GoRoute(path: '/project/:pid/trip', builder: (_, s) => TripScreen(pid: s.pathParameters['pid']!)),
       GoRoute(path: '/project/:pid/expenses', builder: (_, s) => ExpensesScreen(pid: s.pathParameters['pid']!)),
       GoRoute(path: '/project/:pid/submit', builder: (_, s) => SubmitScreen(pid: s.pathParameters['pid']!)),

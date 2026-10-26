@@ -31,13 +31,27 @@ class FieldDashboard extends ConsumerWidget {
         for (final s in p.shops.where((s) => !s.done && !s.held)) (p, s),
     ].take(5).toList();
 
-    return ListView(
+    return RefreshIndicator(
+      onRefresh: () => ref.read(fieldControllerProvider.notifier).refresh(),
+      child: ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: EdgeInsets.zero,
       children: [
         AppHeaderBand(title: 'Hi, ${first.isEmpty ? 'there' : first}', subtitle: "${user.role.label} · ${DateFormat('EEE, d MMM').format(DateTime.now())}", accent: accent),
         Padding(
           padding: const EdgeInsets.all(16),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            if (f.error != null) ...[
+              Card(
+                color: const Color(0xFFFFF4E5),
+                child: ListTile(
+                  leading: const Icon(Icons.cloud_off, color: AppColors.orange),
+                  title: Text(f.error!, style: const TextStyle(fontSize: 14)),
+                  trailing: TextButton(onPressed: () => ref.read(fieldControllerProvider.notifier).refresh(), child: const Text('Retry')),
+                ),
+              ),
+              const SizedBox(height: 10),
+            ],
             GridView.count(
               crossAxisCount: 2,
               shrinkWrap: true,
@@ -86,6 +100,7 @@ class FieldDashboard extends ConsumerWidget {
           ]),
         ),
       ],
+    ),
     );
   }
 }

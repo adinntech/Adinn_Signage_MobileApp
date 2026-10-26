@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_widgets.dart';
+import '../../../core/widgets/input_formats.dart';
 import '../data/field_controller.dart';
 import '../domain/field_models.dart';
 
@@ -75,9 +76,9 @@ class _State extends ConsumerState<SurveyScreen> {
             child: Column(children: [
               TextFormField(initialValue: _survey.dealerName, decoration: const InputDecoration(labelText: 'Dealer name *'), onChanged: (v) => _survey.dealerName = v, validator: (v) => (v ?? '').trim().length < 2 ? 'Enter the dealer name' : null),
               const SizedBox(height: 12),
-              TextFormField(initialValue: _survey.dealerPhone, keyboardType: TextInputType.phone, decoration: const InputDecoration(labelText: 'Mobile'), onChanged: (v) => _survey.dealerPhone = v, validator: (v) => (v ?? '').trim().isEmpty || RegExp(r'^[6-9]\d{9}$').hasMatch(v!.trim()) ? null : 'Enter a 10-digit mobile'),
+              TextFormField(initialValue: _survey.dealerPhone, keyboardType: TextInputType.phone, inputFormatters: phoneFormat, decoration: const InputDecoration(labelText: 'Mobile'), onChanged: (v) => _survey.dealerPhone = v, validator: (v) => (v ?? '').trim().isEmpty || RegExp(r'^[6-9]\d{9}$').hasMatch(v!.trim()) ? null : 'Enter a 10-digit mobile'),
               const SizedBox(height: 12),
-              TextFormField(initialValue: _survey.gstin, textCapitalization: TextCapitalization.characters, decoration: const InputDecoration(labelText: 'GSTIN (optional)'), onChanged: (v) => _survey.gstin = v.toUpperCase(), validator: (v) => (v ?? '').trim().isEmpty || _gstin.hasMatch(v!.trim().toUpperCase()) ? null : 'Enter a valid 15-character GSTIN'),
+              TextFormField(initialValue: _survey.gstin, textCapitalization: TextCapitalization.characters, inputFormatters: gstFormat, decoration: const InputDecoration(labelText: 'GSTIN (optional)'), onChanged: (v) => _survey.gstin = v.toUpperCase(), validator: (v) => (v ?? '').trim().isEmpty || _gstin.hasMatch(v!.trim().toUpperCase()) ? null : 'Enter a valid 15-character GSTIN'),
             ]),
           ),
           for (var i = 0; i < _survey.boards.length; i++)
@@ -144,15 +145,15 @@ class _BoardCard extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Expanded(child: TextFormField(initialValue: board.width?.toString() ?? '', keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'Width (ft) *'), validator: _dim, onChanged: (v) { board.width = double.tryParse(v.trim()); onChanged(); })),
+          Expanded(child: TextFormField(initialValue: board.width?.toString() ?? '', keyboardType: const TextInputType.numberWithOptions(decimal: true), inputFormatters: decimalFormat(), decoration: const InputDecoration(labelText: 'Width (ft) *'), validator: _dim, onChanged: (v) { board.width = double.tryParse(v.trim()); onChanged(); })),
           const SizedBox(width: 10),
-          Expanded(child: TextFormField(initialValue: board.height?.toString() ?? '', keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'Height (ft) *'), validator: _dim, onChanged: (v) { board.height = double.tryParse(v.trim()); onChanged(); })),
+          Expanded(child: TextFormField(initialValue: board.height?.toString() ?? '', keyboardType: const TextInputType.numberWithOptions(decimal: true), inputFormatters: decimalFormat(), decoration: const InputDecoration(labelText: 'Height (ft) *'), validator: _dim, onChanged: (v) { board.height = double.tryParse(v.trim()); onChanged(); })),
         ]),
         const SizedBox(height: 12),
         Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Expanded(child: TextFormField(initialValue: board.mountHeight?.toString() ?? '', keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'Mounting height (ft)'), onChanged: (v) => board.mountHeight = double.tryParse(v.trim()))),
+          Expanded(child: TextFormField(initialValue: board.mountHeight?.toString() ?? '', keyboardType: const TextInputType.numberWithOptions(decimal: true), inputFormatters: decimalFormat(), decoration: const InputDecoration(labelText: 'Mounting height (ft)'), onChanged: (v) => board.mountHeight = double.tryParse(v.trim()))),
           const SizedBox(width: 10),
-          Expanded(child: TextFormField(initialValue: '${board.qty}', keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Quantity'), validator: (v) => (int.tryParse((v ?? '').trim()) ?? 0) >= 1 ? null : 'Min 1', onChanged: (v) { board.qty = int.tryParse(v.trim()) ?? 1; onChanged(); })),
+          Expanded(child: TextFormField(initialValue: '${board.qty}', keyboardType: TextInputType.number, inputFormatters: digitsFormat(3), decoration: const InputDecoration(labelText: 'Quantity'), validator: (v) => (int.tryParse((v ?? '').trim()) ?? 0) >= 1 ? null : 'Min 1', onChanged: (v) { board.qty = int.tryParse(v.trim()) ?? 1; onChanged(); })),
         ]),
         if (type != null) ...[
           const Divider(height: 28),

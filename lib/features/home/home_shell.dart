@@ -5,6 +5,7 @@ import '../../core/theme/app_theme.dart';
 import '../auth/domain/auth_user.dart';
 import '../auth/presentation/auth_controller.dart';
 import '../field/presentation/field_dashboard.dart';
+import '../notifications/presentation/notification_bell.dart';
 
 /// Bottom-nav shell with Home, Assignments, Map, Sync, Profile.
 class HomeShell extends ConsumerStatefulWidget {
@@ -45,6 +46,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
           child: Container(height: 3, color: _accent(auth.user.role)),
         ),
         actions: [
+          const NotificationBell(),
           if (auth.offline)
             const Padding(
               padding: EdgeInsets.only(right: 12),

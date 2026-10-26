@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_widgets.dart';
+import '../../../core/widgets/input_formats.dart';
 import '../data/field_controller.dart';
 import '../domain/field_models.dart';
 
@@ -85,6 +86,7 @@ class _State extends ConsumerState<SubmitScreen> {
                 controller: _closing,
                 enabled: !p.submitted,
                 keyboardType: TextInputType.number,
+                inputFormatters: digitsFormat(7),
                 decoration: InputDecoration(labelText: 'Closing odometer (km) *', helperText: p.trip == null ? 'Start the trip first' : 'Opening: ${p.trip!.openingOdometer} km'),
                 onChanged: (_) => setState(() {}),
                 validator: (v) {
@@ -96,7 +98,7 @@ class _State extends ConsumerState<SubmitScreen> {
               ),
               if (km != null && km >= 0) Align(alignment: Alignment.centerLeft, child: Padding(padding: const EdgeInsets.only(top: 6), child: Text('Distance travelled: $km km', style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.navy)))),
               const SizedBox(height: 12),
-              TextFormField(controller: _fuel, enabled: !p.submitted, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'Fuel filled (litres, optional)')),
+              TextFormField(controller: _fuel, enabled: !p.submitted, keyboardType: const TextInputType.numberWithOptions(decimal: true), inputFormatters: decimalFormat(), decoration: const InputDecoration(labelText: 'Fuel filled (litres, optional)')),
               const SizedBox(height: 12),
               TextFormField(controller: _remarks, enabled: !p.submitted, maxLines: 3, decoration: const InputDecoration(labelText: 'Remarks')),
             ]),

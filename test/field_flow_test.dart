@@ -31,6 +31,7 @@ ProviderContainer _container(UserRole role, {_MemStore? store}) {
   final c = ProviderContainer(overrides: [
     authControllerProvider.overrideWith(() => _FixedAuth(_u(role))),
     fieldStoreProvider.overrideWithValue(store ?? _MemStore()),
+    demoDataProvider.overrideWithValue(true),
   ]);
   addTearDown(c.dispose);
   return c;

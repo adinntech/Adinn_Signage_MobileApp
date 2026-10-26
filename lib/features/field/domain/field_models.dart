@@ -164,14 +164,28 @@ class Acknowledgement {
       );
 }
 
+/// A place the recce person has been sent to (ASO survey): the location or approximate shop BD / Operations gave.
+class JobArea {
+  const JobArea({required this.name, this.address = '', this.approxShops, this.found = 0});
+  final String name;
+  final String address;
+  final int? approxShops;
+  final int found;
+  Map<String, dynamic> toJson() => {'name': name, 'address': address, 'approxShops': approxShops, 'found': found};
+  factory JobArea.fromJson(Map<String, dynamic> j) => JobArea(name: '${j['name']}', address: '${j['address'] ?? ''}', approxShops: int.tryParse('${j['approxShops']}'), found: int.tryParse('${j['found']}') ?? 0);
+}
+
 class Shop {
-  Shop({required this.id, required this.name, required this.address, required this.area, this.dealerName = '', this.phone = '', this.verification, this.survey, List<PhotoRec>? photos, this.ack, this.done = false, this.checkInAt, this.checkInLat, this.checkInLng}) : photos = photos ?? [];
+  Shop({required this.id, required this.name, required this.address, required this.area, this.dealerName = '', this.phone = '', this.lat, this.lng, this.verification, this.survey, List<PhotoRec>? photos, this.ack, this.done = false, this.checkInAt, this.checkInLat, this.checkInLng}) : photos = photos ?? [];
   final String id;
   final String name;
   final String address;
   final String area;
   final String dealerName;
   final String phone;
+  /// Position on the map when known (typed by Operations, found from the address, or taken by GPS when added).
+  final double? lat;
+  final double? lng;
   DealerVerification? verification;
   Survey? survey;
   List<PhotoRec> photos;
@@ -203,13 +217,13 @@ class Shop {
                   : 'Pending';
 
   Map<String, dynamic> toJson() => {
-        'id': id, 'name': name, 'address': address, 'area': area, 'dealerName': dealerName, 'phone': phone,
+        'id': id, 'name': name, 'address': address, 'area': area, 'dealerName': dealerName, 'phone': phone, 'lat': lat, 'lng': lng,
         'verification': verification?.toJson(), 'survey': survey?.toJson(), 'photos': photos.map((p) => p.toJson()).toList(),
         'ack': ack?.toJson(), 'done': done, 'checkInAt': checkInAt?.toIso8601String(), 'checkInLat': checkInLat, 'checkInLng': checkInLng,
       };
   factory Shop.fromJson(Map<String, dynamic> j) => Shop(
         id: '${j['id']}', name: '${j['name']}', address: '${j['address']}', area: '${j['area']}',
-        dealerName: '${j['dealerName'] ?? ''}', phone: '${j['phone'] ?? ''}',
+        dealerName: '${j['dealerName'] ?? ''}', phone: '${j['phone'] ?? ''}', lat: _d(j['lat']), lng: _d(j['lng']),
         verification: j['verification'] == null ? null : DealerVerification.fromJson(Map<String, dynamic>.from(j['verification'] as Map)),
         survey: j['survey'] == null ? null : Survey.fromJson(Map<String, dynamic>.from(j['survey'] as Map)),
         photos: ((j['photos'] as List?) ?? []).map((p) => PhotoRec.fromJson(Map<String, dynamic>.from(p as Map))).toList(),
@@ -255,8 +269,9 @@ class Project {
   Project({
     required this.id, required this.code, required this.client, required this.campaign, required this.district, required this.dueDate,
     required this.shops, this.assignment = AssignmentState.accepted, this.trip, List<Expense>? expenses, this.closingOdometer, this.fuelLitres,
-    this.remarks = '', this.submit = SubmitState.open, this.submittedAt,
-  }) : expenses = expenses ?? [];
+    this.remarks = '', this.submit = SubmitState.open, this.submittedAt, this.requirementType = '', List<JobArea>? areas, this.instructions = '',
+  })  : expenses = expenses ?? [],
+        areas = areas ?? [];
   final String id;
   final String code;
   final String client;
@@ -264,6 +279,11 @@ class Project {
   final String district;
   final DateTime dueDate;
   final List<Shop> shops;
+  /// ASO, SHOP_DETAILS or SHOP_MEASUREMENT. An ASO survey starts with no shops: the recce person adds each one on arrival.
+  final String requirementType;
+  final List<JobArea> areas;
+  final String instructions;
+  bool get isAso => requirementType == 'ASO';
   AssignmentState assignment;
   Trip? trip;
   List<Expense> expenses;
@@ -298,6 +318,7 @@ class Project {
         'shops': shops.map((s) => s.toJson()).toList(), 'assignment': assignment.name, 'trip': trip?.toJson(),
         'expenses': expenses.map((e) => e.toJson()).toList(), 'closingOdometer': closingOdometer, 'fuelLitres': fuelLitres,
         'remarks': remarks, 'submit': submit.name, 'submittedAt': submittedAt?.toIso8601String(),
+        'requirementType': requirementType, 'areas': areas.map((a) => a.toJson()).toList(), 'instructions': instructions,
       };
   factory Project.fromJson(Map<String, dynamic> j) => Project(
         id: '${j['id']}', code: '${j['code']}', client: '${j['client']}', campaign: '${j['campaign']}', district: '${j['district']}', dueDate: _dt(j['dueDate']),
@@ -308,5 +329,8 @@ class Project {
         closingOdometer: int.tryParse('${j['closingOdometer']}'), fuelLitres: _d(j['fuelLitres']), remarks: '${j['remarks'] ?? ''}',
         submit: SubmitState.values.firstWhere((s) => s.name == j['submit'], orElse: () => SubmitState.open),
         submittedAt: j['submittedAt'] == null ? null : _dt(j['submittedAt']),
+        requirementType: '${j['requirementType'] ?? ''}',
+        areas: ((j['areas'] as List?) ?? []).map((a) => JobArea.fromJson(Map<String, dynamic>.from(a as Map))).toList(),
+        instructions: '${j['instructions'] ?? ''}',
       );
 }

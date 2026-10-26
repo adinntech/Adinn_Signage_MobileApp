@@ -1,12 +1,20 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/config/app_config.dart';
+import '../../../core/network/api_exception.dart';
 import '../../auth/presentation/auth_controller.dart';
 import '../domain/field_models.dart';
+import 'field_repository.dart';
 import 'field_store.dart';
 
+/// True only when the app was started with --dart-define=DEMO_DATA=true (tests switch it on too).
+final demoDataProvider = Provider<bool>((_) => AppConfig.demo);
+
 class FieldState {
-  const FieldState({this.loaded = false, this.projects = const [], this.rev = 0});
+  const FieldState({this.loaded = false, this.projects = const [], this.rev = 0, this.error});
   final bool loaded;
+  /// Why the jobs could not be refreshed (offline, server problem); the saved jobs are still shown.
+  final String? error;
   final List<Project> projects;
   /// Bumped on every change so widgets rebuild even though models are mutated in place.
   final int rev;
@@ -42,17 +50,37 @@ class FieldController extends Notifier<FieldState> {
 
   FieldStore get _store => ref.read(fieldStoreProvider);
 
+  /// Loads this person's jobs from the backend and keeps the work already done on the phone. Offline, the saved jobs are shown.
   Future<void> _load() async {
     final u = _user;
     if (u == null) return;
     final saved = await _store.load(u);
-    final projects = saved ?? demoProjects(vendor: _vendor);
-    if (saved == null) await _store.save(u, projects);
-    if (_user == u) state = FieldState(loaded: true, projects: projects, rev: state.rev + 1);
+    var projects = saved ?? <Project>[];
+    String? error;
+    if (ref.read(demoDataProvider)) {
+      if (saved == null) projects = demoProjects(vendor: _vendor);
+    } else {
+      try {
+        projects = mergeJobs(saved ?? [], await ref.read(fieldRepositoryProvider).fetchJobs(vendor: _vendor));
+      } on ApiException catch (e) {
+        error = e.isNetwork ? 'You are offline. Showing the jobs saved on this phone.' : e.message;
+      }
+    }
+    if (_user != u) return;
+    await _store.save(u, projects);
+    state = FieldState(loaded: true, projects: projects, rev: state.rev + 1, error: error);
   }
 
+  /// Pull to refresh: fetch the latest jobs and shops.
+  Future<void> refresh() => _load();
+
+  /// A shop the server has just accepted (an ASO shop added on arrival).
+  void addShop(String pid, Shop shop) => _project(pid, (p) {
+        if (p.shops.every((s) => s.id != shop.id)) p.shops.add(shop);
+      });
+
   void _commit() {
-    state = FieldState(loaded: true, projects: state.projects, rev: state.rev + 1);
+    state = FieldState(loaded: true, projects: state.projects, rev: state.rev + 1, error: state.error);
     final u = _user;
     if (u != null) _store.save(u, state.projects);
   }
@@ -141,3 +169,29 @@ class FieldController extends Notifier<FieldState> {
 }
 
 final fieldControllerProvider = NotifierProvider<FieldController, FieldState>(FieldController.new);
+
+/// Server jobs with the work already done on this phone kept: the description (client, address, position) comes from the
+/// server, the progress (dealer check, measurements, photos, signatures, trip, expenses) from the phone.
+List<Project> mergeJobs(List<Project> local, List<Project> remote) {
+  final mine = {for (final p in local) p.id: p};
+  return remote.map((r) {
+    final l = mine[r.id];
+    if (l == null) return r;
+    final shops = {for (final s in l.shops) s.id: s};
+    return Project(
+      id: r.id, code: r.code, client: r.client, campaign: r.campaign, district: r.district, dueDate: r.dueDate,
+      requirementType: r.requirementType, areas: r.areas, instructions: r.instructions,
+      shops: r.shops.map((rs) {
+        final ls = shops[rs.id];
+        if (ls == null) return rs;
+        return Shop(
+          id: rs.id, name: rs.name, address: rs.address, area: rs.area, dealerName: rs.dealerName, phone: rs.phone, lat: rs.lat, lng: rs.lng,
+          verification: ls.verification, survey: ls.survey, photos: ls.photos, ack: ls.ack, done: ls.done,
+          checkInAt: ls.checkInAt, checkInLat: ls.checkInLat, checkInLng: ls.checkInLng,
+        );
+      }).toList(),
+      assignment: l.assignment, trip: l.trip, expenses: l.expenses, closingOdometer: l.closingOdometer, fuelLitres: l.fuelLitres,
+      remarks: l.remarks, submit: l.submit, submittedAt: l.submittedAt,
+    );
+  }).toList();
+}

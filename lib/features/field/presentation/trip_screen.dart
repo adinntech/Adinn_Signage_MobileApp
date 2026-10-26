@@ -7,6 +7,7 @@ import '../../../core/services/location_service.dart';
 import '../../../core/services/photo_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_widgets.dart';
+import '../../../core/widgets/input_formats.dart';
 import '../data/field_controller.dart';
 import '../domain/field_models.dart';
 
@@ -85,6 +86,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
               TextFormField(
                 controller: _odo,
                 keyboardType: TextInputType.number,
+                inputFormatters: digitsFormat(7),
                 decoration: const InputDecoration(labelText: 'Opening odometer (km) *', prefixIcon: Icon(Icons.speed)),
                 validator: (v) => (int.tryParse((v ?? '').trim()) ?? -1) < 0 ? 'Enter the odometer reading' : null,
               ),
