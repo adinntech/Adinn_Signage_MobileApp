@@ -161,6 +161,18 @@ class FieldRepository {
       phone: t('mobile'),
       lat: s['lat'] == null ? null : double.tryParse('${s['lat']}'),
       lng: s['lng'] == null ? null : double.tryParse('${s['lng']}'),
+      assignedAt: DateTime.tryParse('${s['assignedToAt']}')?.toLocal(),
+      assignedBy: s['assignedToBy'] is Map ? '${(s['assignedToBy'] as Map)['name'] ?? ''}' : '',
+      details: {
+        if (t('siteCode').isNotEmpty) 'Shop code': t('siteCode'),
+        if (t('contactPerson').isNotEmpty) 'Contact person': t('contactPerson'),
+        if (t('mobile').isNotEmpty) 'Mobile': t('mobile'),
+        if (t('gstin').isNotEmpty) 'GST': t('gstin'),
+        if (t('pincode').isNotEmpty) 'Pincode': t('pincode'),
+        if (t('boardType').isNotEmpty) 'Board type': t('boardType'),
+        if (t('width').isNotEmpty && t('height').isNotEmpty) 'Board size': '${t('width')} × ${t('height')} ${t('unit')}'.trim(),
+        if (t('remarks').isNotEmpty) 'Remarks': t('remarks'),
+      },
     );
   }
 }

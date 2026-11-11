@@ -99,6 +99,25 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<int> requestResetCode(String identifier) async {
+    final res = await _post('/auth/forgot', {'identifier': identifier.trim().toLowerCase()});
+    final data = res.data is Map ? (res.data as Map)['data'] : null;
+    final wait = data is Map ? data['resendAfterSeconds'] : null;
+    return wait is num ? wait.toInt() : 60;
+  }
+
+  @override
+  Future<void> confirmReset(String identifier, String code, AuthCredential credential, {bool confirmReuse = false}) async {
+    await _post('/auth/forgot/confirm', {
+      'identifier': identifier.trim().toLowerCase(),
+      'code': code,
+      'authMethod': credential.method,
+      'newSecret': credential.toBody().values.first,
+      'confirmReuse': confirmReuse,
+    });
+  }
+
+  @override
   Future<void> logout() async {
     final refresh = await _store.readRefreshToken();
     if (refresh != null) {

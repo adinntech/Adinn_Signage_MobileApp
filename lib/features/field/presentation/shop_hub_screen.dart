@@ -9,6 +9,12 @@ import '../../../core/widgets/app_widgets.dart';
 import '../data/field_controller.dart';
 import 'field_dashboard.dart';
 
+String _when(DateTime d) {
+  const m = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  final h = d.hour % 12 == 0 ? 12 : d.hour % 12;
+  return '${d.day} ${m[d.month - 1]} ${d.year}, $h:${d.minute.toString().padLeft(2, '0')} ${d.hour >= 12 ? 'pm' : 'am'}';
+}
+
 /// One shop's recce checklist. Each step unlocks only when the previous rule is satisfied.
 class ShopHubScreen extends ConsumerWidget {
   const ShopHubScreen({super.key, required this.pid, required this.sid});
@@ -53,6 +59,28 @@ class ShopHubScreen extends ConsumerWidget {
               const Spacer(),
               if (s.phone.isNotEmpty) TextButton.icon(onPressed: () => launchUrl(Uri(scheme: 'tel', path: s.phone)), icon: const Icon(Icons.call), label: Text(s.phone)),
             ]),
+            if (s.assignedAt != null || s.details.isNotEmpty)
+              Card(
+                margin: const EdgeInsets.only(top: 6),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    if (s.assignedAt != null)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Text('Assigned ${_when(s.assignedAt!)}${s.assignedBy.isEmpty ? '' : ' by ${s.assignedBy}'}', style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.navy)),
+                      ),
+                    for (final e in s.details.entries)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 2),
+                        child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          SizedBox(width: 110, child: Text(e.key, style: const TextStyle(color: Colors.black54))),
+                          Expanded(child: Text(e.value, style: const TextStyle(fontWeight: FontWeight.w600))),
+                        ]),
+                      ),
+                  ]),
+                ),
+              ),
             if (s.held)
               Card(
                 color: const Color(0xFFFEE2E2),

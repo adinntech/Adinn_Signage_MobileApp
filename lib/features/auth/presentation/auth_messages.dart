@@ -10,6 +10,8 @@ String friendlyAuthMessage(AuthFailure f) {
       return 'Too many wrong attempts. Try again in 15 minutes or ask your administrator to reset your credential.';
     case 'PLATFORM_NOT_ALLOWED':
       return 'This account signs in on the web CRM, not the mobile app.';
+    case 'INVALID_RESET_CODE':
+      return 'The code is invalid or has expired. Request a new one.';
     case 'CONFLICT':
       return 'An account with this email or employee ID already exists.';
     case 'ACCOUNT_DISABLED':

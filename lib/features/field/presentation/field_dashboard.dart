@@ -176,6 +176,7 @@ class ProjectCard extends ConsumerWidget {
   }
 }
 
+
 /// Assignments tab: every project with its shops.
 class AssignmentsPage extends ConsumerWidget {
   const AssignmentsPage({super.key, required this.user});

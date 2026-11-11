@@ -6,6 +6,7 @@ import 'package:signage/features/auth/domain/auth_credential.dart';
 import 'package:signage/features/auth/domain/auth_repository.dart';
 import 'package:signage/features/auth/domain/auth_rules.dart';
 import 'package:signage/features/auth/domain/auth_user.dart';
+import 'package:signage/features/auth/presentation/forgot_screen.dart';
 import 'package:signage/features/auth/presentation/login_screen.dart';
 import 'package:signage/features/auth/presentation/register_screen.dart';
 
@@ -41,6 +42,16 @@ class _Repo implements AuthRepository {
     registered = request;
     return _user;
   }
+
+  String? resetRequestedFor;
+  @override
+  Future<int> requestResetCode(String identifier) async {
+    resetRequestedFor = identifier;
+    return 60;
+  }
+
+  @override
+  Future<void> confirmReset(String identifier, String code, AuthCredential credential, {bool confirmReuse = false}) async {}
 
   @override
   Future<void> logout() async {}
@@ -161,8 +172,11 @@ void main() {
     await tester.pump();
     expect(repo.loggedInRole, 'RECCE');
 
+    await tester.ensureVisible(find.text('Vendor'));
+    await tester.pump();
     await tester.tap(find.text('Vendor'));
     await tester.pump();
+    await tester.ensureVisible(find.text('Login'));
     await tester.tap(find.text('Login'));
     await tester.pump();
     expect(repo.loggedInRole, 'VENDOR');
@@ -181,9 +195,9 @@ void main() {
     expect(find.textContaining('Incorrect'), findsNothing);
   });
 
-  testWidgets('login has no forgot-password option', (tester) async {
+  testWidgets('login offers forgot MPIN or password', (tester) async {
     await tester.pumpWidget(_app(_Repo(), const LoginScreen()));
-    expect(find.textContaining('Forgot'), findsNothing);
+    expect(find.text('Forgot MPIN or password?'), findsOneWidget);
   });
 
   testWidgets('login rejects an incomplete MPIN before calling the API',
@@ -286,5 +300,28 @@ void main() {
     await tester.pump();
     expect(find.text('Passwords do not match'), findsOneWidget);
     expect(repo.registered, isNull);
+  });
+
+  testWidgets('forgot: change email clears the code and asks again', (tester) async {
+    final repo = _Repo();
+    await tester.pumpWidget(_app(repo, const ForgotScreen()));
+    await tester.enterText(_fields().first, 'wrong@adinn.test');
+    await tester.tap(find.text('Send code'));
+    await tester.pumpAndSettle();
+    expect(repo.resetRequestedFor, 'wrong@adinn.test');
+    expect(find.text('6-digit verification code *'), findsOneWidget);
+
+    await tester.enterText(_fields().first, '123456');
+    await tester.ensureVisible(find.text('Change email'));
+    await tester.tap(find.text('Change email'));
+    await tester.pumpAndSettle();
+    expect(find.text('Send code'), findsOneWidget);
+
+    await tester.enterText(_fields().first, 'right@adinn.test');
+    await tester.tap(find.text('Send code'));
+    await tester.pumpAndSettle();
+    expect(repo.resetRequestedFor, 'right@adinn.test');
+    expect(tester.widget<TextField>(_fields().first).controller!.text, isEmpty);
+    expect(find.text('Set a new password'), findsOneWidget);
   });
 }

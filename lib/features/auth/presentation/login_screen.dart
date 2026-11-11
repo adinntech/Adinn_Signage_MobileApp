@@ -113,7 +113,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               enabled: !busy,
               onSubmit: _submit,
             ),
-            const SizedBox(height: 24),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: busy
+                    ? null
+                    : () => context.push(Uri(path: '/forgot', queryParameters: {
+                          if (_identifier.text.trim().isNotEmpty) 'id': _identifier.text.trim(),
+                          'method': _credential.useMpin ? 'mpin' : 'password',
+                        }).toString()),
+                child: const Text('Forgot MPIN or password?'),
+              ),
+            ),
+            const SizedBox(height: 8),
             AuthButton(label: 'Login', busy: busy, onPressed: _submit),
             const SizedBox(height: 12),
             Row(

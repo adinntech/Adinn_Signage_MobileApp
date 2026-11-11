@@ -188,6 +188,7 @@ List<Project> mergeJobs(List<Project> local, List<Project> remote) {
           id: rs.id, name: rs.name, address: rs.address, area: rs.area, dealerName: rs.dealerName, phone: rs.phone, lat: rs.lat, lng: rs.lng,
           verification: ls.verification, survey: ls.survey, photos: ls.photos, ack: ls.ack, done: ls.done,
           checkInAt: ls.checkInAt, checkInLat: ls.checkInLat, checkInLng: ls.checkInLng,
+          assignedAt: rs.assignedAt, assignedBy: rs.assignedBy, details: rs.details,
         );
       }).toList(),
       assignment: l.assignment, trip: l.trip, expenses: l.expenses, closingOdometer: l.closingOdometer, fuelLitres: l.fuelLitres,

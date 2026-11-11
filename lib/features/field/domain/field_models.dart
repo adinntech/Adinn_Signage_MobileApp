@@ -176,7 +176,7 @@ class JobArea {
 }
 
 class Shop {
-  Shop({required this.id, required this.name, required this.address, required this.area, this.dealerName = '', this.phone = '', this.lat, this.lng, this.verification, this.survey, List<PhotoRec>? photos, this.ack, this.done = false, this.checkInAt, this.checkInLat, this.checkInLng}) : photos = photos ?? [];
+  Shop({required this.id, required this.name, required this.address, required this.area, this.dealerName = '', this.phone = '', this.lat, this.lng, this.verification, this.survey, List<PhotoRec>? photos, this.ack, this.done = false, this.checkInAt, this.checkInLat, this.checkInLng, this.assignedAt, this.assignedBy = '', Map<String, String>? details}) : photos = photos ?? [], details = details ?? {};
   final String id;
   final String name;
   final String address;
@@ -196,6 +196,11 @@ class Shop {
   double? checkInLat;
   double? checkInLng;
   bool get checkedIn => checkInAt != null;
+  /// When Operations gave this shop to this login, and who did. Set by the office, not edited on the phone.
+  final DateTime? assignedAt;
+  final String assignedBy;
+  /// The shop details the recce person needs (label -> value): contact, GST, pincode, board type and size, remarks.
+  final Map<String, String> details;
 
   bool get verified => verification != null;
   bool get held => verification != null && !verification!.allowsVisit;
@@ -214,12 +219,15 @@ class Shop {
               ? 'In progress'
               : canVisit
                   ? 'Approved to visit'
-                  : 'Pending';
+                  : assignedAt != null
+                      ? 'In progress'
+                      : 'Pending';
 
   Map<String, dynamic> toJson() => {
         'id': id, 'name': name, 'address': address, 'area': area, 'dealerName': dealerName, 'phone': phone, 'lat': lat, 'lng': lng,
         'verification': verification?.toJson(), 'survey': survey?.toJson(), 'photos': photos.map((p) => p.toJson()).toList(),
         'ack': ack?.toJson(), 'done': done, 'checkInAt': checkInAt?.toIso8601String(), 'checkInLat': checkInLat, 'checkInLng': checkInLng,
+        'assignedAt': assignedAt?.toIso8601String(), 'assignedBy': assignedBy, 'details': details,
       };
   factory Shop.fromJson(Map<String, dynamic> j) => Shop(
         id: '${j['id']}', name: '${j['name']}', address: '${j['address']}', area: '${j['area']}',
@@ -232,6 +240,9 @@ class Shop {
         checkInAt: j['checkInAt'] == null ? null : _dt(j['checkInAt']),
         checkInLat: _d(j['checkInLat']),
         checkInLng: _d(j['checkInLng']),
+        assignedAt: j['assignedAt'] == null ? null : _dt(j['assignedAt']),
+        assignedBy: '${j['assignedBy'] ?? ''}',
+        details: ((j['details'] as Map?) ?? {}).map((k, v) => MapEntry('$k', '$v')),
       );
 }
 

@@ -49,6 +49,14 @@ abstract class AuthRepository {
   /// Creates the account and signs the user in. Throws [AuthFailure].
   Future<AuthUser> register(RegisterRequest request);
 
+  /// Emails a 6-digit reset code. The backend answers the same whether or not the account exists.
+  /// Returns the seconds to wait before a resend. Throws [AuthFailure].
+  Future<int> requestResetCode(String identifier);
+
+  /// Checks the emailed [code] and sets the new MPIN or password. Throws [AuthFailure]
+  /// (`CREDENTIAL_REUSED` when the new value equals the current one and [confirmReuse] is false).
+  Future<void> confirmReset(String identifier, String code, AuthCredential credential, {bool confirmReuse = false});
+
   /// Best-effort server logout, then always clears local storage.
   Future<void> logout();
 

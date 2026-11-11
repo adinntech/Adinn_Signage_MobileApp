@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'core/config/app_config.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/auth_controller.dart';
+import 'features/auth/presentation/forgot_screen.dart';
 import 'features/auth/presentation/login_screen.dart';
 import 'features/auth/presentation/register_screen.dart';
 import 'features/field/presentation/acknowledgement_screen.dart';
@@ -27,7 +28,7 @@ class _RouterRefresh extends ChangeNotifier {
 }
 
 /// Reachable without a session.
-const _publicRoutes = {'/login', '/register'};
+const _publicRoutes = {'/login', '/register', '/forgot'};
 
 final routerProvider = Provider<GoRouter>((ref) {
   final refresh = _RouterRefresh();
@@ -56,6 +57,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/splash', builder: (_, _) => const _Splash()),
       GoRoute(path: '/login', builder: (_, _) => const LoginScreen()),
       GoRoute(path: '/register', builder: (_, _) => const RegisterScreen()),
+      GoRoute(path: '/forgot', builder: (_, s) => ForgotScreen(initialIdentifier: s.uri.queryParameters['id'] ?? '', startWithMpin: s.uri.queryParameters['method'] == 'mpin')),
       GoRoute(path: '/recce', builder: (_, _) => const HomeShell()),
       GoRoute(path: '/vendor', builder: (_, _) => const HomeShell()),
       GoRoute(path: '/notifications', builder: (_, _) => const NotificationsScreen()),

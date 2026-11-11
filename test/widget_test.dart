@@ -18,6 +18,10 @@ class _NoSessionRepo implements AuthRepository {
   Future<AuthUser> register(RegisterRequest request) async =>
       throw const AuthFailure('CONFLICT');
   @override
+  Future<int> requestResetCode(String identifier) async => 60;
+  @override
+  Future<void> confirmReset(String identifier, String code, AuthCredential credential, {bool confirmReuse = false}) async {}
+  @override
   Future<void> logout() async {}
   @override
   Stream<void> get sessionExpired => const Stream.empty();

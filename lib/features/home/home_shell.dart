@@ -17,8 +17,8 @@ class HomeShell extends ConsumerStatefulWidget {
 
 class _HomeShellState extends ConsumerState<HomeShell> {
   int _index = 0;
-
-  static const _titles = ['Home', 'Assignments', 'Map', 'Sync', 'Profile'];
+//MOBILE APP TITLE HEADER
+  static const _titles = ['Homes', 'Assignment', 'Map', 'Sync', 'Profile'];
 
   /// Recce executives are teal, vendors purple (shared design system).
   static Color _accent(UserRole role) =>
@@ -56,7 +56,8 @@ class _HomeShellState extends ConsumerState<HomeShell> {
               ),
             ),
         ],
-      ),
+      ), 
+      //WEB APP 
       body: SafeArea(child: pages[_index]),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
@@ -69,7 +70,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
           NavigationDestination(
               icon: Icon(Icons.assignment_outlined),
               selectedIcon: Icon(Icons.assignment),
-              label: 'Assignments'),
+              label: 'Assignment'),
           NavigationDestination(
               icon: Icon(Icons.map_outlined),
               selectedIcon: Icon(Icons.map),
