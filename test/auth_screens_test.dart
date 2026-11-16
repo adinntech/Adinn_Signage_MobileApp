@@ -54,6 +54,9 @@ class _Repo implements AuthRepository {
   Future<void> confirmReset(String identifier, String code, AuthCredential credential, {bool confirmReuse = false}) async {}
 
   @override
+  Future<void> changeOwnMpin(String currentMpin, String newMpin) async {}
+
+  @override
   Future<void> logout() async {}
   @override
   Stream<void> get sessionExpired => const Stream.empty();

@@ -175,7 +175,7 @@ class _ForgotScreenState extends ConsumerState<ForgotScreen> {
       title: _confirmStep ? 'Set a new $method' : 'Forgot MPIN or password?',
       subtitle: _confirmStep
           ? 'Enter the 6-digit code emailed to the address linked to ${_identifier.text.trim().toLowerCase()}, then choose your new $method.'
-          : 'Enter your email or employee ID. We will email you a 6-digit verification code.',
+          : 'Enter your email or username. We will email you a 6-digit verification code. No email on your account (some vendors)? Contact Recce Operations to reset your MPIN.',
       showBack: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

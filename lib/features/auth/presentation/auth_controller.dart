@@ -77,6 +77,14 @@ class AuthController extends Notifier<AuthState> {
     }
   }
 
+  /// Sets a new MPIN, then signs out: the server ended every session, so the person signs in again with the new MPIN.
+  /// Throws [AuthFailure] (wrong current MPIN, weak new MPIN) so the screen can show it.
+  Future<void> changeMpin(String currentMpin, String newMpin) async {
+    await _repo.changeOwnMpin(currentMpin, newMpin);
+    await _repo.logout();
+    state = const AuthUnauthenticated();
+  }
+
   Future<void> logout() async {
     await _repo.logout();
     state = const AuthUnauthenticated();

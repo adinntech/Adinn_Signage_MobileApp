@@ -43,6 +43,9 @@ class FakeAuthRepository implements AuthRepository {
   @override
   Future<void> confirmReset(String identifier, String code, AuthCredential credential, {bool confirmReuse = false}) async {}
   @override
+  Future<void> changeOwnMpin(String currentMpin, String newMpin) async {}
+
+  @override
   Future<void> logout() async => loggedOut = true;
 
   @override

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'core/config/app_config.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/auth_controller.dart';
+import 'features/auth/presentation/change_mpin_screen.dart';
 import 'features/auth/presentation/forgot_screen.dart';
 import 'features/auth/presentation/login_screen.dart';
 import 'features/auth/presentation/register_screen.dart';
@@ -47,6 +48,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         case AuthUnauthenticated():
           return _publicRoutes.contains(loc) ? null : '/login';
         case Authenticated(:final user):
+          if (user.mustChangeMpin) return loc == '/change-mpin' ? null : '/change-mpin';
           final target = user.role.homeRoute ?? '/unsupported';
           // Field staff may open their home and any project/shop screen; everything else goes home.
           if (user.role.homeRoute != null && loc.startsWith('/project/')) return null;
@@ -58,6 +60,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/login', builder: (_, _) => const LoginScreen()),
       GoRoute(path: '/register', builder: (_, _) => const RegisterScreen()),
       GoRoute(path: '/forgot', builder: (_, s) => ForgotScreen(initialIdentifier: s.uri.queryParameters['id'] ?? '', startWithMpin: s.uri.queryParameters['method'] == 'mpin')),
+      GoRoute(path: '/change-mpin', builder: (_, _) => const ChangeMpinScreen()),
       GoRoute(path: '/recce', builder: (_, _) => const HomeShell()),
       GoRoute(path: '/vendor', builder: (_, _) => const HomeShell()),
       GoRoute(path: '/notifications', builder: (_, _) => const NotificationsScreen()),

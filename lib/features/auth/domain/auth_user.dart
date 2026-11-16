@@ -40,6 +40,8 @@ class AuthUser {
     required this.role,
     required this.isActive,
     this.permissions = const [],
+    this.mustChangeMpin = false,
+    this.hasEmail = true,
   });
 
   final String id;
@@ -49,6 +51,12 @@ class AuthUser {
   final UserRole role;
   final bool isActive;
   final List<String> permissions;
+
+  /// Vendor login made by the office with a default MPIN: a new MPIN must be set before anything else.
+  final bool mustChangeMpin;
+
+  /// False for a vendor login without an email: MPIN reset goes through Recce Operations.
+  final bool hasEmail;
 
   factory AuthUser.fromJson(Map<String, dynamic> j) => AuthUser(
         id: j['id'].toString(),
@@ -60,5 +68,7 @@ class AuthUser {
         permissions: ((j['permissions'] as List?) ?? const [])
             .map((e) => e.toString())
             .toList(growable: false),
+        mustChangeMpin: j['mustChangeMpin'] as bool? ?? false,
+        hasEmail: j['hasEmail'] as bool? ?? true,
       );
 }

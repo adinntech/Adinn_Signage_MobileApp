@@ -57,6 +57,10 @@ abstract class AuthRepository {
   /// (`CREDENTIAL_REUSED` when the new value equals the current one and [confirmReuse] is false).
   Future<void> confirmReset(String identifier, String code, AuthCredential credential, {bool confirmReuse = false});
 
+  /// Signed-in person sets a new MPIN (first sign-in after the office made the login). The server then ends every
+  /// session, so the caller signs out. Throws [AuthFailure].
+  Future<void> changeOwnMpin(String currentMpin, String newMpin);
+
   /// Best-effort server logout, then always clears local storage.
   Future<void> logout();
 

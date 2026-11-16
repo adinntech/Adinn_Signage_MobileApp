@@ -118,6 +118,20 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<void> changeOwnMpin(String currentMpin, String newMpin) async {
+    try {
+      await _dio.post(
+        '/users/me/change-credential',
+        data: {'currentSecret': currentMpin, 'authMethod': 'MPIN', 'mpin': newMpin},
+        options: Options(headers: {if (_tokens.accessToken != null) 'Authorization': 'Bearer ${_tokens.accessToken}'}),
+      );
+    } on DioException catch (e) {
+      final api = ApiException.fromDio(e);
+      throw AuthFailure(api.code, api.message);
+    }
+  }
+
+  @override
   Future<void> logout() async {
     final refresh = await _store.readRefreshToken();
     if (refresh != null) {
