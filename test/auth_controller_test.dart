@@ -26,6 +26,8 @@ class FakeAuthRepository implements AuthRepository {
   Future<RestoredSession?> restore() async => restored;
 
   @override
+  Future<AuthUser> vendorLogin(String vendorId) => throw const AuthFailure('VENDOR_NOT_FOUND');
+  @override
   Future<AuthUser> login(String identifier, AuthCredential credential,
       {String? loginRole}) async {
     if (fail != null) throw fail!;

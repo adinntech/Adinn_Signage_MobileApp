@@ -4,6 +4,10 @@ String friendlyAuthMessage(AuthFailure f) {
   switch (f.code) {
     case 'INVALID_CREDENTIALS':
       return 'Incorrect details. If you registered with an MPIN, switch on "Use MPIN".';
+    case 'VENDOR_ID_AMBIGUOUS':
+      return 'More than one vendor has these last 4 digits. Enter your full vendor ID.';
+    case 'VENDOR_NOT_FOUND':
+      return 'Vendor ID not found. Tap "Forgot vendor ID?" to contact the office.';
     case 'USER_NOT_FOUND':
       return 'User not found';
     case 'ACCOUNT_LOCKED':

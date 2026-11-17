@@ -46,6 +46,10 @@ abstract class AuthRepository {
   /// Throws [AuthFailure].
   Future<AuthUser> login(String identifier, AuthCredential credential, {String? loginRole});
 
+  /// Vendor card: signs in with the vendor ID digits only (last 4 digits, or the full ID when two vendors share the last 4).
+  /// Throws [AuthFailure] (`VENDOR_NOT_FOUND`, `VENDOR_ID_AMBIGUOUS`).
+  Future<AuthUser> vendorLogin(String vendorId);
+
   /// Creates the account and signs the user in. Throws [AuthFailure].
   Future<AuthUser> register(RegisterRequest request);
 

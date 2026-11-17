@@ -20,6 +20,10 @@ class AppConfig {
 
   static const String appName = 'Adinn Recce';
 
+  /// Who a vendor calls when they do not know their vendor ID ("Forgot vendor ID?").
+  static const String vendorSupportName = 'Karthi';
+  static const String vendorSupportPhone = '745389103';
+
   /// `--dart-define=DEMO_DATA=true` loads sample jobs instead of the real ones (for trying the app without a backend).
   static const bool demo = bool.fromEnvironment('DEMO_DATA');
 }

@@ -65,6 +65,18 @@ class AuthController extends Notifier<AuthState> {
     }
   }
 
+  /// Vendor card: the vendor ID digits are the whole sign-in.
+  Future<void> vendorLogin(String vendorId) async {
+    state = const AuthUnauthenticated(busy: true);
+    try {
+      state = Authenticated(await _repo.vendorLogin(vendorId.trim()));
+    } on AuthFailure catch (e) {
+      state = AuthUnauthenticated(error: e);
+    } catch (e) {
+      state = AuthUnauthenticated(error: AuthFailure('UNKNOWN', '$e'));
+    }
+  }
+
   /// Creates the account; on success the user is signed in.
   Future<void> register(RegisterRequest request) async {
     state = const AuthUnauthenticated(busy: true);

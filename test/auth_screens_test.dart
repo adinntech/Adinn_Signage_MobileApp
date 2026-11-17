@@ -9,6 +9,7 @@ import 'package:signage/features/auth/domain/auth_user.dart';
 import 'package:signage/features/auth/presentation/forgot_screen.dart';
 import 'package:signage/features/auth/presentation/login_screen.dart';
 import 'package:signage/features/auth/presentation/register_screen.dart';
+import 'package:signage/features/auth/presentation/vendor_help_screen.dart';
 
 const _user = AuthUser(
   id: '1',
@@ -28,6 +29,13 @@ class _Repo implements AuthRepository {
 
   @override
   Future<RestoredSession?> restore() async => null;
+  String? vendorLoggedInWith;
+  @override
+  Future<AuthUser> vendorLogin(String vendorId) async {
+    vendorLoggedInWith = vendorId;
+    throw failWith ?? const AuthFailure('VENDOR_NOT_FOUND');
+  }
+
   @override
   Future<AuthUser> login(String identifier, AuthCredential credential,
       {String? loginRole}) async {
@@ -178,11 +186,50 @@ void main() {
     await tester.ensureVisible(find.text('Vendor'));
     await tester.pump();
     await tester.tap(find.text('Vendor'));
+    await tester.pumpAndSettle();
+    // Vendor card: only the vendor ID digits (no MPIN, no password, no register link).
+    expect(find.text('Use MPIN'), findsNothing);
+    expect(find.text('Create an account'), findsNothing);
+    expect(_fields(), findsOneWidget);
+    await tester.enterText(_fields().at(0), '1001');
+    await tester.ensureVisible(find.text('Continue'));
+    await tester.tap(find.text('Continue'));
     await tester.pump();
-    await tester.ensureVisible(find.text('Login'));
-    await tester.tap(find.text('Login'));
+    expect(repo.vendorLoggedInWith, '1001');
+  });
+
+  testWidgets('vendor card takes digits only and rejects a short vendor ID', (tester) async {
+    final repo = _Repo();
+    await tester.pumpWidget(_app(repo, const LoginScreen()));
+    await tester.ensureVisible(find.text('Vendor'));
+    await tester.tap(find.text('Vendor'));
+    await tester.pumpAndSettle();
+    await tester.enterText(_fields().at(0), 'ab12');
+    expect((tester.widget(_fields().at(0)) as TextField).controller!.text, '12');
+    await tester.ensureVisible(find.text('Continue'));
+    await tester.tap(find.text('Continue'));
     await tester.pump();
-    expect(repo.loggedInRole, 'VENDOR');
+    expect(find.text('Enter the last 4 digits of your vendor ID'), findsNWidgets(2)); // subtitle + field error
+    expect(repo.vendorLoggedInWith, isNull);
+  });
+
+  testWidgets('vendor card has "Forgot vendor ID?" (call the office); recce keeps the email reset', (tester) async {
+    await tester.pumpWidget(_app(_Repo(), const LoginScreen()));
+    expect(find.text('Forgot MPIN or password?'), findsOneWidget);
+    expect(find.text('Forgot vendor ID?'), findsNothing);
+    await tester.ensureVisible(find.text('Vendor'));
+    await tester.tap(find.text('Vendor'));
+    await tester.pumpAndSettle();
+    expect(find.text('Forgot vendor ID?'), findsOneWidget);
+    expect(find.text('Forgot MPIN or password?'), findsNothing);
+  });
+
+  testWidgets('forgot vendor ID page shows who to call', (tester) async {
+    await tester.pumpWidget(_app(_Repo(), const VendorHelpScreen()));
+    expect(find.text('Karthi'), findsOneWidget);
+    expect(find.text('Kindly contact for vendor login'), findsOneWidget);
+    expect(find.text('745389103'), findsOneWidget);
+    expect(find.byKey(const ValueKey('call-support')), findsOneWidget);
   });
 
   testWidgets('login shows only "User not found" when the role does not match',

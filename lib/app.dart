@@ -7,6 +7,7 @@ import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/auth_controller.dart';
 import 'features/auth/presentation/change_mpin_screen.dart';
 import 'features/auth/presentation/forgot_screen.dart';
+import 'features/auth/presentation/vendor_help_screen.dart';
 import 'features/auth/presentation/login_screen.dart';
 import 'features/auth/presentation/register_screen.dart';
 import 'features/field/presentation/acknowledgement_screen.dart';
@@ -29,7 +30,7 @@ class _RouterRefresh extends ChangeNotifier {
 }
 
 /// Reachable without a session.
-const _publicRoutes = {'/login', '/register', '/forgot'};
+const _publicRoutes = {'/login', '/register', '/forgot', '/vendor-help'};
 
 final routerProvider = Provider<GoRouter>((ref) {
   final refresh = _RouterRefresh();
@@ -60,6 +61,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/login', builder: (_, _) => const LoginScreen()),
       GoRoute(path: '/register', builder: (_, _) => const RegisterScreen()),
       GoRoute(path: '/forgot', builder: (_, s) => ForgotScreen(initialIdentifier: s.uri.queryParameters['id'] ?? '', startWithMpin: s.uri.queryParameters['method'] == 'mpin')),
+      GoRoute(path: '/vendor-help', builder: (_, _) => const VendorHelpScreen()),
       GoRoute(path: '/change-mpin', builder: (_, _) => const ChangeMpinScreen()),
       GoRoute(path: '/recce', builder: (_, _) => const HomeShell()),
       GoRoute(path: '/vendor', builder: (_, _) => const HomeShell()),

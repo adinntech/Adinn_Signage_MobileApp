@@ -115,6 +115,8 @@ class _ProfilePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final v = user.vendor;
+    if (v != null) return _VendorProfile(user: user, vendor: v);
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -138,6 +140,45 @@ class _ProfilePage extends ConsumerWidget {
                   leading: const Icon(Icons.badge_outlined),
                   title: Text(user.role.label),
                   subtitle: const Text('Role')),
+            ],
+          ),
+        ),
+        const SizedBox(height: 24),
+        OutlinedButton.icon(
+          onPressed: () => ref.read(authControllerProvider.notifier).logout(),
+          icon: const Icon(Icons.logout),
+          label: const Text('Log out'),
+        ),
+      ],
+    );
+  }
+}
+
+/// Vendor profile: the company's name, phone and email exactly as the vendor master holds them.
+class _VendorProfile extends ConsumerWidget {
+  const _VendorProfile({required this.user, required this.vendor});
+  final AuthUser user;
+  final VendorProfile vendor;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    Widget row(IconData icon, String? value, String label) => value == null
+        ? const SizedBox.shrink()
+        : ListTile(leading: Icon(icon), title: Text(value), subtitle: Text(label));
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        Card(
+          child: Column(
+            children: [
+              row(Icons.storefront_outlined, vendor.name, 'Vendor name'),
+              row(Icons.tag, vendor.vendorNo, 'Vendor ID'),
+              row(Icons.person_outline, vendor.contactPerson, 'Contact person'),
+              row(Icons.phone_outlined, vendor.phone, 'Phone'),
+              row(Icons.phone_android_outlined, vendor.altPhone, 'Alternate phone'),
+              row(Icons.email_outlined, vendor.email, 'Email'),
+              row(Icons.location_on_outlined, [vendor.state, vendor.pincode].whereType<String>().join(' - ').isEmpty ? null : [vendor.state, vendor.pincode].whereType<String>().join(' - '), 'State / Pincode'),
+              row(Icons.login, user.name == vendor.name ? null : user.name, 'Login name'),
             ],
           ),
         ),

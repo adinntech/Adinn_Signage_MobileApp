@@ -24,6 +24,13 @@ class AuthRules {
     return _employeeId.hasMatch(s) ? null : 'Enter a valid employee ID';
   }
 
+  /// Vendor card: the last 4 digits of the vendor ID, or the full ID (4 to 10 digits).
+  static String? vendorId(String? v) {
+    final s = v?.trim() ?? '';
+    if (s.isEmpty) return 'Enter the last 4 digits of your vendor ID';
+    return RegExp(r'^\d{4,10}$').hasMatch(s) ? null : 'Enter the last 4 digits of your vendor ID';
+  }
+
   static String? name(String? v) =>
       (v?.trim().length ?? 0) < 2 ? 'Enter your full name' : null;
 

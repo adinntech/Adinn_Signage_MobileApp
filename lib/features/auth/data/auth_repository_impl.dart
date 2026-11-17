@@ -82,6 +82,14 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<AuthUser> vendorLogin(String vendorId) async {
+    final res = await _post('/auth/vendor-login', {'vendorId': vendorId});
+    final payload = TokenPayload.fromEnvelope(res.data);
+    await _tokens.persist(payload);
+    return AuthUser.fromJson(payload.user);
+  }
+
+  @override
   Future<AuthUser> register(RegisterRequest r) async {
     final res = await _post('/auth/register', {
       'name': r.name,

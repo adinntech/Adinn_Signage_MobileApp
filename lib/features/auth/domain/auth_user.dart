@@ -31,6 +31,45 @@ enum UserRole {
       this == UserRole.recceExecutive || this == UserRole.vendor;
 }
 
+/// The vendor company a vendor login belongs to, exactly as the vendor master holds it.
+class VendorProfile {
+  const VendorProfile({
+    required this.name,
+    this.vendorNo,
+    this.contactPerson,
+    this.phone,
+    this.altPhone,
+    this.email,
+    this.state,
+    this.pincode,
+  });
+
+  final String name;
+  final String? vendorNo;
+  final String? contactPerson;
+  final String? phone;
+  final String? altPhone;
+  final String? email;
+  final String? state;
+  final String? pincode;
+
+  static String? _s(dynamic v) {
+    final s = v?.toString().trim() ?? '';
+    return s.isEmpty ? null : s;
+  }
+
+  factory VendorProfile.fromJson(Map<String, dynamic> j) => VendorProfile(
+        name: (j['name'] ?? '').toString(),
+        vendorNo: _s(j['vendorNo']),
+        contactPerson: _s(j['contactPerson']),
+        phone: _s(j['phone']),
+        altPhone: _s(j['altPhone']),
+        email: _s(j['email']),
+        state: _s(j['state']),
+        pincode: _s(j['pincode']),
+      );
+}
+
 class AuthUser {
   const AuthUser({
     required this.id,
@@ -42,6 +81,7 @@ class AuthUser {
     this.permissions = const [],
     this.mustChangeMpin = false,
     this.hasEmail = true,
+    this.vendor,
   });
 
   final String id;
@@ -58,6 +98,9 @@ class AuthUser {
   /// False for a vendor login without an email: MPIN reset goes through Recce Operations.
   final bool hasEmail;
 
+  /// Set for vendor logins only.
+  final VendorProfile? vendor;
+
   factory AuthUser.fromJson(Map<String, dynamic> j) => AuthUser(
         id: j['id'].toString(),
         name: (j['name'] ?? '').toString(),
@@ -70,5 +113,8 @@ class AuthUser {
             .toList(growable: false),
         mustChangeMpin: j['mustChangeMpin'] as bool? ?? false,
         hasEmail: j['hasEmail'] as bool? ?? true,
+        vendor: j['vendor'] is Map
+            ? VendorProfile.fromJson(Map<String, dynamic>.from(j['vendor'] as Map))
+            : null,
       );
 }

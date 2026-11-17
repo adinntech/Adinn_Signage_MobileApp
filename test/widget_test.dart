@@ -11,6 +11,8 @@ class _NoSessionRepo implements AuthRepository {
   @override
   Future<RestoredSession?> restore() async => null;
   @override
+  Future<AuthUser> vendorLogin(String vendorId) => throw const AuthFailure('VENDOR_NOT_FOUND');
+  @override
   Future<AuthUser> login(String identifier, AuthCredential credential,
       {String? loginRole}) async =>
       throw const AuthFailure('INVALID_CREDENTIALS');

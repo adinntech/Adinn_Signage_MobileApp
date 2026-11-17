@@ -80,6 +80,7 @@ class CredentialSection extends StatefulWidget {
     required this.switchLabel,
     this.enabled = true,
     this.onSubmit,
+    this.allowSwitch = true,
   });
 
   final CredentialInputs inputs;
@@ -88,6 +89,9 @@ class CredentialSection extends StatefulWidget {
 
   /// Called when the user finishes the last field (keyboard "done" / MPIN complete).
   final VoidCallback? onSubmit;
+
+  /// false hides the password / MPIN switch (the vendor card signs in with the MPIN only).
+  final bool allowSwitch;
 
   @override
   State<CredentialSection> createState() => _CredentialSectionState();
@@ -106,13 +110,15 @@ class _CredentialSectionState extends State<CredentialSection> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _MethodSwitch(
-              label: widget.switchLabel,
-              value: i.useMpin,
-              enabled: widget.enabled,
-              onChanged: i.setUseMpin,
-            ),
-            const SizedBox(height: 16),
+            if (widget.allowSwitch) ...[
+              _MethodSwitch(
+                label: widget.switchLabel,
+                value: i.useMpin,
+                enabled: widget.enabled,
+                onChanged: i.setUseMpin,
+              ),
+              const SizedBox(height: 16),
+            ],
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 220),
               transitionBuilder: (child, anim) => FadeTransition(

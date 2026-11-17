@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -30,6 +31,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   UserRole _role = UserRole.recceExecutive;
   String? _identifierError;
 
+  bool get _isVendor => _role == UserRole.vendor;
+
+  /// The vendor card signs in with the vendor ID digits and the MPIN only.
+  void _pickRole(UserRole role) {
+    if (role == _role) return;
+    setState(() {
+      _role = role;
+      _identifier.clear();
+      _identifierError = null;
+    });
+    _credential.setUseMpin(false);
+  }
+
   @override
   void dispose() {
     _identifier.dispose();
@@ -38,6 +52,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _submit() async {
+    if (_isVendor) {
+      // Vendor card: the vendor ID digits are the whole sign-in (no MPIN, no password).
+      final idErr = AuthRules.vendorId(_identifier.text);
+      setState(() => _identifierError = idErr);
+      if (idErr != null) return;
+      FocusScope.of(context).unfocus();
+      await ref.read(authControllerProvider.notifier).vendorLogin(_identifier.text);
+      return;
+    }
     final idErr = AuthRules.identifier(_identifier.text);
     final credOk = _credential.validate();
     setState(() => _identifierError = idErr);
@@ -58,7 +81,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     return AuthScaffold(
       title: 'Welcome back',
-      subtitle: 'Sign in with your password or MPIN',
+      subtitle: _isVendor ? 'Enter the last 4 digits of your vendor ID' : 'Sign in with your password or MPIN',
       child: AutofillGroup(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -85,7 +108,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       hint: r.hint,
                       icon: r.icon,
                       selected: _role == r.role,
-                      onTap: busy ? null : () => setState(() => _role = r.role),
+                      onTap: busy ? null : () => _pickRole(r.role),
                     ),
                   ),
                   if (r != _roles.last) const SizedBox(width: 12),
@@ -96,48 +119,64 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             TextField(
               controller: _identifier,
               enabled: !busy,
-              keyboardType: TextInputType.emailAddress,
+              keyboardType: _isVendor ? TextInputType.number : TextInputType.emailAddress,
               textInputAction: TextInputAction.next,
-              autofillHints: const [AutofillHints.username, AutofillHints.email],
+              inputFormatters: _isVendor
+                  ? [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(10)]
+                  : null,
+              autofillHints: _isVendor ? null : const [AutofillHints.username, AutofillHints.email],
               autocorrect: false,
               decoration: InputDecoration(
-                labelText: 'Email / Employee ID',
+                labelText: _isVendor ? 'Vendor ID (last 4 digits)' : 'Email / Employee ID',
+                helperText: _isVendor ? 'Example: vendor ID 11001 → enter 1001' : null,
                 errorText: _identifierError,
-                prefixIcon: const Icon(Icons.mail_outline),
+                prefixIcon: Icon(_isVendor ? Icons.storefront_outlined : Icons.mail_outline),
               ),
             ),
             const SizedBox(height: 20),
-            CredentialSection(
-              inputs: _credential,
-              switchLabel: 'Use MPIN',
-              enabled: !busy,
-              onSubmit: _submit,
-            ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: busy
-                    ? null
-                    : () => context.push(Uri(path: '/forgot', queryParameters: {
-                          if (_identifier.text.trim().isNotEmpty) 'id': _identifier.text.trim(),
-                          'method': _credential.useMpin ? 'mpin' : 'password',
-                        }).toString()),
-                child: const Text('Forgot MPIN or password?'),
-              ),
-            ),
-            const SizedBox(height: 8),
-            AuthButton(label: 'Login', busy: busy, onPressed: _submit),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text('New here?'),
-                TextButton(
-                  onPressed: busy ? null : () => context.push('/register'),
-                  child: const Text('Create an account'),
+            if (_isVendor) ...[
+              const SizedBox(height: 8),
+              AuthButton(label: 'Continue', busy: busy, onPressed: _submit),
+              Align(
+                alignment: Alignment.center,
+                child: TextButton(
+                  onPressed: busy ? null : () => context.push('/vendor-help'),
+                  child: const Text('Forgot vendor ID?'),
                 ),
-              ],
-            ),
+              ),
+            ] else ...[
+              CredentialSection(
+                inputs: _credential,
+                switchLabel: 'Use MPIN',
+                enabled: !busy,
+                onSubmit: _submit,
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: busy
+                      ? null
+                      : () => context.push(Uri(path: '/forgot', queryParameters: {
+                            if (_identifier.text.trim().isNotEmpty) 'id': _identifier.text.trim(),
+                            'method': _credential.useMpin ? 'mpin' : 'password',
+                          }).toString()),
+                  child: const Text('Forgot MPIN or password?'),
+                ),
+              ),
+              const SizedBox(height: 8),
+              AuthButton(label: 'Login', busy: busy, onPressed: _submit),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('New here?'),
+                  TextButton(
+                    onPressed: busy ? null : () => context.push('/register'),
+                    child: const Text('Create an account'),
+                  ),
+                ],
+              ),
+            ],
           ],
         ),
       ),
