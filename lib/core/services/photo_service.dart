@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -21,8 +22,10 @@ class PhotoService {
 
   /// Opens the camera (or gallery when [camera] is false). Returns the stored file path or null if cancelled.
   Future<String?> pick({bool camera = true}) async {
-    final x = await ImagePicker().pickImage(source: camera ? ImageSource.camera : ImageSource.gallery, maxWidth: 2400, imageQuality: 85);
+    final x = await ImagePicker().pickImage(source: camera && !kIsWeb ? ImageSource.camera : ImageSource.gallery, maxWidth: 2400, imageQuality: 85);
     if (x == null) return null;
+    // In a browser there is no app folder: the picked file's own (blob) address is kept for this session.
+    if (kIsWeb) return x.path;
     final dest = File('${(await _dir()).path}/${_name('orig', 'jpg')}');
     await File(x.path).copy(dest.path);
     return dest.path;

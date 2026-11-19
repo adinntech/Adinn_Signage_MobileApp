@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../auth/domain/auth_user.dart';
@@ -46,6 +47,11 @@ class _HomeShellState extends ConsumerState<HomeShell> {
           child: Container(height: 3, color: _accent(auth.user.role)),
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.fact_check_outlined),
+            tooltip: 'Recce evidence',
+            onPressed: () => context.push('/recce-evidence'),
+          ),
           const NotificationBell(),
           if (auth.offline)
             const Padding(

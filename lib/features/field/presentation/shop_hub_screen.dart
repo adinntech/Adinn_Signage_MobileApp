@@ -31,15 +31,15 @@ class ShopHubScreen extends ConsumerWidget {
     final locked = p.submitted;
 
     Widget step({required IconData icon, required String title, required String subtitle, required bool done, bool enabled = true, VoidCallback? onTap, String? lockedReason}) {
+      final open = enabled && !locked;
       return Card(
         margin: const EdgeInsets.only(bottom: 10),
         child: ListTile(
-          enabled: enabled && !locked,
           leading: CircleAvatar(backgroundColor: done ? const Color(0xFFD1FAE5) : AppColors.softBlueBg, child: Icon(done ? Icons.check : icon, color: done ? const Color(0xFF059669) : AppColors.navy)),
-          title: Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
-          subtitle: Text(enabled ? subtitle : (lockedReason ?? subtitle)),
-          trailing: Icon(enabled ? Icons.chevron_right : Icons.lock_outline),
-          onTap: enabled && !locked ? onTap : () => lockedReason != null ? toast(context, lockedReason, error: true) : null,
+          title: Text(title, style: TextStyle(fontWeight: FontWeight.w700, color: open ? null : Colors.black45)),
+          subtitle: Text(enabled ? subtitle : (lockedReason ?? subtitle), style: TextStyle(color: open ? null : Colors.black45)),
+          trailing: Icon(open ? Icons.chevron_right : Icons.lock_outline),
+          onTap: open ? onTap : () => toast(context, locked ? 'The project is already submitted' : (lockedReason ?? 'Not available yet'), error: true),
         ),
       );
     }
@@ -85,6 +85,20 @@ class ShopHubScreen extends ConsumerWidget {
               Card(
                 color: const Color(0xFFFEE2E2),
                 child: Padding(padding: const EdgeInsets.all(12), child: Row(children: [const Icon(Icons.pause_circle, color: AppColors.error), const SizedBox(width: 10), Expanded(child: Text('Travel on hold: ${s.verification!.outcome.label}. Call the dealer again to approve this visit.'))])),
+              ),
+            if (s.canVisit && needsTrip && !locked)
+              Card(
+                color: const Color(0xFFFFF4E0),
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    const Text('Next: start the trip', style: TextStyle(fontWeight: FontWeight.w800, color: AppColors.orange)),
+                    const SizedBox(height: 4),
+                    const Text('The dealer approved this visit. Record the opening odometer and trip photo once for the project, then come back to check in at this shop.'),
+                    const SizedBox(height: 10),
+                    SizedBox(width: double.infinity, height: 46, child: FilledButton.icon(onPressed: () => context.push('/project/$pid/trip'), icon: const Icon(Icons.route), label: const Text('Start trip'))),
+                  ]),
+                ),
               ),
             const SizedBox(height: 6),
             step(

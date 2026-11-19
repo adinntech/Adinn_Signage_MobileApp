@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'features/recce/presentation/recce_shop_screen.dart';
+import 'features/recce/presentation/recce_shops_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -66,6 +68,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/recce', builder: (_, _) => const HomeShell()),
       GoRoute(path: '/vendor', builder: (_, _) => const HomeShell()),
       GoRoute(path: '/notifications', builder: (_, _) => const NotificationsScreen()),
+      GoRoute(path: '/recce-evidence', builder: (_, _) => const RecceShopsScreen()),
+      GoRoute(path: '/recce-evidence/:siteId', builder: (_, s) => RecceShopScreen(siteId: s.pathParameters['siteId']!)),
       GoRoute(path: '/project/:pid', builder: (_, s) => ProjectScreen(pid: s.pathParameters['pid']!)),
       GoRoute(path: '/project/:pid/add-shop', builder: (_, s) => AddShopScreen(pid: s.pathParameters['pid']!)),
       GoRoute(path: '/project/:pid/trip', builder: (_, s) => TripScreen(pid: s.pathParameters['pid']!)),

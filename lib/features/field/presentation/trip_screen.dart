@@ -50,8 +50,12 @@ class _TripScreenState extends ConsumerState<TripScreen> {
   }
 
   Future<void> _snap() async {
-    final path = await ref.read(photoServiceProvider).pick();
-    if (path != null && mounted) setState(() { _photo = path; _photoMissing = false; });
+    try {
+      final path = await ref.read(photoServiceProvider).pick();
+      if (path != null && mounted) setState(() { _photo = path; _photoMissing = false; });
+    } catch (e) {
+      if (mounted) toast(context, 'Could not open the photo: $e', error: true);
+    }
   }
 
   void _start() {

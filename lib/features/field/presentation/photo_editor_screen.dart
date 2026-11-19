@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:image_picker/image_picker.dart' show XFile;
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -59,7 +59,7 @@ class _State extends ConsumerState<PhotoEditorScreen> {
       });
 
   Future<void> _loadSize(String path) async {
-    final bytes = await File(path).readAsBytes();
+    final bytes = await XFile(path).readAsBytes();
     final codec = await ui.instantiateImageCodec(bytes);
     final f = await codec.getNextFrame();
     if (mounted) setState(() => _imageSize = Size(f.image.width.toDouble(), f.image.height.toDouble()));
@@ -157,7 +157,7 @@ class _State extends ConsumerState<PhotoEditorScreen> {
                             }
                           },
                           child: Stack(fit: StackFit.expand, children: [
-                            RotatedBox(quarterTurns: _e.turns, child: Image.file(File(photo.originalPath), fit: BoxFit.fill)),
+                            RotatedBox(quarterTurns: _e.turns, child: appImage(photo.originalPath, fit: BoxFit.fill)),
                             CustomPaint(painter: MarkPainter(rect: _live ?? _e.rect, label: label, note: _e.note)),
                           ]),
                         );

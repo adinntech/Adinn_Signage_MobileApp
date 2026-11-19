@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
@@ -105,10 +106,16 @@ class AppPhotoThumb extends StatelessWidget {
           child: SizedBox(
             width: size,
             height: size,
-            child: Image.file(File(path), fit: BoxFit.cover, errorBuilder: (_, _, _) => Container(color: AppColors.softBlueBg, child: const Icon(Icons.broken_image_outlined))),
+            child: appImage(path, fit: BoxFit.cover),
           ),
         ),
       );
+}
+
+/// A picture from a stored path: a file on the phone, or (in a browser) the address of the picked file.
+Widget appImage(String path, {BoxFit fit = BoxFit.cover}) {
+  Widget broken(BuildContext c, Object e, StackTrace? s) => Container(color: AppColors.softBlueBg, child: const Icon(Icons.broken_image_outlined));
+  return kIsWeb ? Image.network(path, fit: fit, errorBuilder: broken) : Image.file(File(path), fit: fit, errorBuilder: broken);
 }
 
 class AppEmpty extends StatelessWidget {
