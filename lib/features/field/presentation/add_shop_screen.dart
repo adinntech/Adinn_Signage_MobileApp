@@ -112,7 +112,7 @@ class _AddShopState extends ConsumerState<AddShopScreen> {
             controller: _phone,
             keyboardType: TextInputType.phone,
             inputFormatters: phoneFormat,
-            decoration: const InputDecoration(labelText: 'Mobile *', helperText: '10 digits, numbers only', prefixIcon: Icon(Icons.phone)),
+            decoration: const InputDecoration(labelText: 'Mobile *', helperText: '+91 followed by 10 digits, numbers only', prefixIcon: PhonePrefix()),
             validator: (v) => _phoneRule.hasMatch((v ?? '').trim()) ? null : 'Enter a 10-digit mobile number',
           ),
           const SizedBox(height: 12),

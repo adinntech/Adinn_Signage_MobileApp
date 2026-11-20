@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../core/services/location_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_widgets.dart';
+import '../../../core/widgets/input_formats.dart';
 import '../data/field_controller.dart';
 import 'field_dashboard.dart';
 
@@ -57,7 +58,7 @@ class ShopHubScreen extends ConsumerWidget {
             Row(children: [
               AppStatusChip(s.statusLabel, color: shopColor(s)),
               const Spacer(),
-              if (s.phone.isNotEmpty) TextButton.icon(onPressed: () => launchUrl(Uri(scheme: 'tel', path: s.phone)), icon: const Icon(Icons.call), label: Text(s.phone)),
+              if (s.phone.isNotEmpty) TextButton.icon(onPressed: () => launchUrl(Uri(scheme: 'tel', path: s.phone)), icon: const Icon(Icons.call), label: Text(showMobile(s.phone))),
             ]),
             if (s.assignedAt != null || s.details.isNotEmpty)
               Card(

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/input_formats.dart';
 import '../auth/domain/auth_user.dart';
 import '../auth/presentation/auth_controller.dart';
 import '../field/presentation/field_dashboard.dart';
@@ -140,7 +141,7 @@ class _ProfilePage extends ConsumerWidget {
               if (user.phone != null && user.phone!.isNotEmpty)
                 ListTile(
                     leading: const Icon(Icons.phone_outlined),
-                    title: Text(user.phone!),
+                    title: Text(showMobile(user.phone)),
                     subtitle: const Text('Phone')),
               ListTile(
                   leading: const Icon(Icons.badge_outlined),
@@ -180,8 +181,8 @@ class _VendorProfile extends ConsumerWidget {
               row(Icons.storefront_outlined, vendor.name, 'Vendor name'),
               row(Icons.tag, vendor.vendorNo, 'Vendor ID'),
               row(Icons.person_outline, vendor.contactPerson, 'Contact person'),
-              row(Icons.phone_outlined, vendor.phone, 'Phone'),
-              row(Icons.phone_android_outlined, vendor.altPhone, 'Alternate phone'),
+              row(Icons.phone_outlined, showMobile(vendor.phone).isEmpty ? null : showMobile(vendor.phone), 'Phone'),
+              row(Icons.phone_android_outlined, showMobile(vendor.altPhone).isEmpty ? null : showMobile(vendor.altPhone), 'Alternate phone'),
               row(Icons.email_outlined, vendor.email, 'Email'),
               row(Icons.location_on_outlined, [vendor.state, vendor.pincode].whereType<String>().join(' - ').isEmpty ? null : [vendor.state, vendor.pincode].whereType<String>().join(' - '), 'State / Pincode'),
               row(Icons.login, user.name == vendor.name ? null : user.name, 'Login name'),

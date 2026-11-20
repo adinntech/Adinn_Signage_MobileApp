@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/input_formats.dart';
 import '../domain/auth_repository.dart';
 import '../domain/auth_rules.dart';
 import '../domain/auth_user.dart';
@@ -67,7 +68,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       TextInputType? type,
       List<String>? hints,
       List<TextInputFormatter>? formatters,
-      String? helper}) {
+      String? helper,
+      bool prefix = false}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: TextField(
@@ -80,8 +82,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         decoration: InputDecoration(
           labelText: '$label *',
           helperText: helper,
+          prefixIcon: !prefix ? Icon(icon) : const PhonePrefix(),
+
           errorText: _errors[key],
-          prefixIcon: Icon(icon),
         ),
       ),
     );
@@ -134,7 +137,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           _field('phone', _phone, 'Phone', Icons.phone_outlined,
               busy: busy,
               type: TextInputType.number,
-              helper: '10 digits, numbers only',
+              helper: '+91 followed by 10 digits, numbers only',
+              prefix: true,
               formatters: [
                 FilteringTextInputFormatter.digitsOnly,
                 LengthLimitingTextInputFormatter(10),

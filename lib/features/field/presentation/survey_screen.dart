@@ -76,7 +76,7 @@ class _State extends ConsumerState<SurveyScreen> {
             child: Column(children: [
               TextFormField(initialValue: _survey.dealerName, decoration: const InputDecoration(labelText: 'Dealer name *'), onChanged: (v) => _survey.dealerName = v, validator: (v) => (v ?? '').trim().length < 2 ? 'Enter the dealer name' : null),
               const SizedBox(height: 12),
-              TextFormField(initialValue: _survey.dealerPhone, keyboardType: TextInputType.phone, inputFormatters: phoneFormat, decoration: const InputDecoration(labelText: 'Mobile'), onChanged: (v) => _survey.dealerPhone = v, validator: (v) => (v ?? '').trim().isEmpty || RegExp(r'^[6-9]\d{9}$').hasMatch(v!.trim()) ? null : 'Enter a 10-digit mobile'),
+              TextFormField(initialValue: _survey.dealerPhone, keyboardType: TextInputType.phone, inputFormatters: phoneFormat, decoration: const InputDecoration(labelText: 'Mobile', prefixIcon: PhonePrefix()), onChanged: (v) => _survey.dealerPhone = v, validator: (v) => (v ?? '').trim().isEmpty || RegExp(r'^[6-9]\d{9}$').hasMatch(v!.trim()) ? null : 'Enter a 10-digit mobile'),
               const SizedBox(height: 12),
               TextFormField(initialValue: _survey.gstin, textCapitalization: TextCapitalization.characters, inputFormatters: gstFormat, decoration: const InputDecoration(labelText: 'GSTIN (optional)'), onChanged: (v) => _survey.gstin = v.toUpperCase(), validator: (v) => (v ?? '').trim().isEmpty || _gstin.hasMatch(v!.trim().toUpperCase()) ? null : 'Enter a valid 15-character GSTIN'),
             ]),

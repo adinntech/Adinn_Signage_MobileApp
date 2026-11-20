@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_widgets.dart';
+import '../../../core/widgets/input_formats.dart';
 import '../data/field_controller.dart';
 import '../domain/field_models.dart';
 
@@ -57,7 +58,7 @@ class _State extends ConsumerState<DealerVerificationScreen> {
               style: FilledButton.styleFrom(backgroundColor: AppColors.teal),
               onPressed: s.phone.isEmpty ? null : () => launchUrl(Uri(scheme: 'tel', path: s.phone)),
               icon: const Icon(Icons.call),
-              label: Text(s.phone.isEmpty ? 'No phone number on file' : 'Call dealer · ${s.phone}'),
+              label: Text(s.phone.isEmpty ? 'No phone number on file' : 'Call dealer · ${showMobile(s.phone)}'),
             ),
           ]),
         ),

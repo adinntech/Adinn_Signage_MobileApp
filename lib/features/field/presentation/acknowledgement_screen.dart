@@ -105,7 +105,7 @@ class _State extends ConsumerState<AcknowledgementScreen> {
               _Row('Shop', s.name),
               _Row('Location', '${s.address}, ${s.area}'),
               const SizedBox(height: 8),
-              TextField(controller: _contact, keyboardType: TextInputType.phone, inputFormatters: phoneFormat, decoration: const InputDecoration(labelText: 'Contact number')),
+              TextField(controller: _contact, keyboardType: TextInputType.phone, inputFormatters: phoneFormat, decoration: const InputDecoration(labelText: 'Contact number', prefixIcon: PhonePrefix())),
               const SizedBox(height: 12),
               TextField(controller: _gstin, textCapitalization: TextCapitalization.characters, inputFormatters: gstFormat, decoration: const InputDecoration(labelText: 'GSTIN')),
             ]),
